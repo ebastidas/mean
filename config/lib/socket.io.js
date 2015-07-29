@@ -10,6 +10,7 @@ var config = require('../config'),
     passport = require('passport'),
     socketio = require('socket.io'),
     session = require('express-session'),
+    chalk = require('chalk'),
     MongoStore = require('connect-mongo')(session);
 
 // Define the Socket.io configuration method
@@ -40,30 +41,49 @@ module.exports = function(app, db) {
   });
 
   // Intercept Socket.io's handshake request
-  io.use(function(socket, next) {
-    // Use the 'cookie-parser' module to parse the request cookies
-    cookieParser(config.sessionSecret)(socket.request, {}, function(err) {
-      // Get the session id from the request cookies
-      var sessionId = socket.request.signedCookies['connect.sid'];
-
-      // Use the mongoStorage instance to get the Express session information
-      mongoStore.get(sessionId, function(err, session) {
-        // Set the Socket.io session information
-        socket.request.session = session;
-
-        // Use Passport to populate the user details
-        passport.initialize()(socket.request, {}, function() {
-          passport.session()(socket.request, {}, function() {
-            if (socket.request.user) {
-              next(null, true);
-            } else {
-              next(new Error('User is not authenticated'), false);
-            }
-          });
+  io.use(function (socket, next) {
+        // Use the 'cookie-parser' module to parse the request cookies
+        cookieParser(config.sessionSecret)(socket.request, {}, function (err) {
+            // Get the session id from the request cookies
+            var sessionId = socket.request.signedCookies['connect.sid'];
+            
+            // Use the mongoStorage instance to get the Express session information
+            mongoStore.get(sessionId, function (err, session) {
+                // Set the Socket.io session information
+                socket.request.session = session;
+                
+                // Use Passport to populate the user details
+                passport.initialize()(socket.request, {}, function () {
+                    passport.session()(socket.request, {}, function () {
+                        if (socket.request.user) {
+                            // put connected user into a room for receiving direct socket messages
+                            socket.join(socket.request.user.username, function (err) {
+                                if (err) {
+                                    // log room join error
+                                    console.log('--');
+                                    console.log(chalk.red('Room Join Error'));
+                                    console.log(chalk.red('room:\t\t\t\t' + socket.request.user.username));
+                                    console.log(chalk.red('\t' + err));
+                                    console.log('--');
+                                }
+                                else {
+                                    // log the successful room join
+                                    console.log('--');
+                                    console.log(chalk.green('Room Join'));
+                                    console.log(chalk.green('room:\t\t\t\t' + socket.request.user.username));
+                                    console.log(chalk.green('date:\t\t\t\t' + Date().toString()));
+                                    console.log('--');
+                                }
+                            });
+                            next(null, true);
+                        } else {
+                            next(new Error('User is not authenticated'), false);
+                        }
+                    });
+                });
+            });
         });
-      });
     });
-  });
 
   // Add an event listener to the 'connection' event
   io.on('connection', function(socket) {
