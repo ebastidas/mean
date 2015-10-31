@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('core').controller('HeaderController', ['$scope', '$state', 'Authentication', 'Menus',
-  function ($scope, $state, Authentication, Menus) {
+angular.module('core').controller('HeaderController', ['$scope', '$state', '$http', '$localStorage', 'Authentication', 'Menus',
+  function ($scope, $state, $http, $localStorage, Authentication, Menus) {
     // Expose view variables
     $scope.$state = $state;
     $scope.authentication = Authentication;
@@ -19,5 +19,18 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', 'Auth
     $scope.$on('$stateChangeSuccess', function () {
       $scope.isCollapsed = false;
     });
+
+    $scope.signout = function () {
+
+      $http.get('/api/auth/signout')
+      .success(function (response) {
+        $localStorage.token = undefined;
+        Authentication.user = null;
+
+        $state.go('home', {}, { reload: true, inherit: false });
+      }).error(function (response) {
+        $scope.error = response.message;
+      });
+    };
   }
 ]);
