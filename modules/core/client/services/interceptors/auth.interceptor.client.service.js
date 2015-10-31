@@ -1,8 +1,16 @@
 'use strict';
 
-angular.module('core').factory('authInterceptor', ['$q', '$injector',
-  function ($q, $injector) {
+angular.module('core').factory('authInterceptor', ['$q', '$injector', '$localStorage',
+  function ($q, $injector, $localStorage) {
     return {
+      request: function (config) {
+        config.headers = config.headers || {};
+        if ($localStorage.token) {
+          config.headers.Authorization = 'Bearer ' + $localStorage.token;
+        }
+
+        return config;
+      },
       responseError: function(rejection) {
         if (!rejection.config.ignoreAuthModule) {
           switch (rejection.status) {

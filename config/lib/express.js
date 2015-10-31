@@ -7,6 +7,7 @@ var config = require('../config'),
   express = require('express'),
   morgan = require('morgan'),
   logger = require('./logger'),
+  tokenAuth = require('./token-auth'),
   bodyParser = require('body-parser'),
   session = require('express-session'),
   MongoStore = require('connect-mongo')(session),
@@ -44,6 +45,9 @@ module.exports.initLocalVariables = function (app) {
     res.locals.url = req.protocol + '://' + req.headers.host + req.originalUrl;
     next();
   });
+
+  // Authorize request
+  app.use(tokenAuth.authorize);
 };
 
 /**
@@ -230,7 +234,7 @@ module.exports.init = function (db) {
   this.initViewEngine(app);
 
   // Initialize Express session
-  this.initSession(app, db);
+  //this.initSession(app, db);
 
   // Initialize Modules configuration
   this.initModulesConfiguration(app);

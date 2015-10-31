@@ -1,14 +1,17 @@
 'use strict';
 
-angular.module('users').controller('ChangeProfilePictureController', ['$scope', '$timeout', '$window', 'Authentication', 'FileUploader',
-  function ($scope, $timeout, $window, Authentication, FileUploader) {
+angular.module('users').controller('ChangeProfilePictureController', ['$scope', '$timeout', '$window', '$localStorage', 'Authentication', 'FileUploader',
+  function ($scope, $timeout, $window, $localStorage, Authentication, FileUploader) {
     $scope.user = Authentication.user;
     $scope.imageURL = $scope.user.profileImageURL;
 
     // Create file uploader instance
     $scope.uploader = new FileUploader({
       url: 'api/users/picture',
-      alias: 'newProfilePicture'
+      alias: 'newProfilePicture',
+      headers: {
+        Authorization: 'Bearer ' + $localStorage.token
+      }
     });
 
     // Set file uploader image filter

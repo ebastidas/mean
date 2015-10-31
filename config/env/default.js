@@ -27,6 +27,10 @@ module.exports = {
   // for obsecurity reasons
   sessionKey: 'sessionId',
   sessionCollection: 'sessions',
+  tokenAuth: {
+    secret: process.env.TOKEN_AUTH_SECRET || 'M3@N_R0CK5!',
+    expiresInSeconds: process.env.TOKEN_AUTH_EXPIRES_SECONDS || 200 * 60 * 60 // 200 hours
+  },
   logo: 'modules/core/client/img/brand/logo.png',
   favicon: 'modules/core/client/img/brand/favicon.ico',
   uploads: {
