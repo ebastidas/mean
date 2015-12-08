@@ -1,5 +1,5 @@
 (function () {
-'use strict';
+  'use strict';
 
   angular
     .module('articles')
@@ -26,13 +26,17 @@
       Socket.connect();
     }
 
-    Socket.on('articleCreateError', function (response) {
-      $scope.error = response.message;
+    Socket.on('articleUpdateError', function (response) {
+      vm.error = response.message;
+      $scope.isUpdating = false;
+      //TODO: Use ng-messages
     });
 
-    Socket.on('articleCreateSuccess', function (response) {
-      if ($scope.articles) {
-        $scope.articles.unshift(response.data);
+    Socket.on('articleUpdateSuccess', function (response) {
+      if (vm.article && vm.article._id.toString() === response.data._id) {
+        vm.article = response.data;
+        vm.message = response.message;
+        $scope.isUpdating = false;
       }
     });
 
@@ -44,19 +48,13 @@
         $scope.$broadcast('show-errors-check-validity', 'articleForm');
         return false;
       }
-      // we can send the user back to the articles list already
-      $location.path('articles');
-
-      // Create new Article object
-      var article = new Articles({
-        title: this.title,
-        content: this.content
-      });
 
       // we can send the user back to the articles list already
-      $location.path('articles');
+      if (!vm.article._id) {
+        $state.go('articles.list');
+      }
 
-      // wait to send create request so we can create a smooth transition by allowing User time to get to the list view again
+      // wait to send create request so we can create a smooth transition
       $timeout(function () {
         // TODO: move create/update logic to service
         if (vm.article._id) {
@@ -66,14 +64,14 @@
           Socket.emit('articleCreate', vm.article);
         }        
       }, 2000);
-      }
+    }
 
     // Remove existing Article
     function remove() {
       if (confirm('Are you sure you want to delete?')) {
         vm.article.$remove($state.go('articles.list'));
-          }
-        }
+      }
+    }
 
     // Save Article
     function save(isValid) {
@@ -92,7 +90,7 @@
       function successCallback(res) {
         $state.go('articles.view', {
           articleId: res._id
-      });
+        });
       }
 
       function errorCallback(res) {
