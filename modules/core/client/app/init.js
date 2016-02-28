@@ -4,8 +4,54 @@
 angular.module(ApplicationConfiguration.applicationModuleName, ApplicationConfiguration.applicationModuleVendorDependencies);
 
 // Setting HTML5 Location Mode
-angular.module(ApplicationConfiguration.applicationModuleName).config(['$locationProvider', '$httpProvider',
-  function ($locationProvider, $httpProvider) {
+angular.module(ApplicationConfiguration.applicationModuleName).config(['$locationProvider', '$httpProvider', '$urlRouterProvider',
+  function ($locationProvider, $httpProvider, $urlRouterProvider) {
+
+    // This Rule works for all routes
+    $urlRouterProvider.rule(function ($injector, $location) {
+      //what this function returns will be set as the $location.url
+      var path = $location.path(), normalized = path.toLowerCase();
+      if (path !== normalized) {
+        //instead of returning a new url string, I'll just change the $location.path directly so I don't have to worry about constructing a new url string and so a new state change is not triggered
+        $location.replace().path(normalized);
+      }
+      // because we've returned nothing, no state change occurs
+    });
+
+    /*
+        This route config will cause conflicts
+
+        articles      - { url: '/articles', abstract: true }
+        articles.list - { url: '' }
+        articles.view - { url: '/:articleId' }
+
+        Is the solution to refactor this route config? The below routes won't have the same conflict
+
+        articles      - { url: '/articles', abstract: true }
+        articles.list - { url: '' }
+
+        article       - { url: '/article', abstract: true }
+        article.view  - { url: '/:articleId' }
+
+    */
+
+    // This Rule won't work with routes that have the above mentioned configuration, 
+    // but it DOES work when defined directly in the Articles routes config with the same configuration.
+    // Why would we see this behavior??
+
+    /*$urlRouterProvider.rule(function ($injector, $location) {
+      var path = $location.path();
+      var hasTrailingSlash = path.length > 1 && path[path.length - 1] === '/';
+
+      if (hasTrailingSlash) {
+
+        //if last character is a slash, return the same url without the slash  
+        var newPath = path.substr(0, path.length - 1);
+        //return newPath;
+        $location.replace().path(newPath);
+      }
+    });*/
+
     $locationProvider.html5Mode(true).hashPrefix('!');
 
     $httpProvider.interceptors.push('authInterceptor');
