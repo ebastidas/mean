@@ -27,5 +27,12 @@
         vm.articles.unshift(response.data);
       }
     });
+
+    Socket.on('articleUpdateSuccess', function (response) {
+      if (vm.articles) {
+        // not the most elegant way to reload the data, but hey :)
+        vm.articles = ArticlesService.query();
+      }
+    });
   }
 })();

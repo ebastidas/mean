@@ -29,22 +29,17 @@ module.exports = function (io, socket) {
 
   // Update an Article, and then emit the response back to all connected clients.
   socket.on('articleUpdate', function (data) {
-    console.log('inside update');
-    console.log(data);
     var user = socket.request.user;
 
     // Find the Article to update
     Article.findById(data._id).populate('user', 'displayName').exec(function (err, article) {
       if (err) {
-        console.log('err: ', err);
         // Emit an error response event
         io.emit('articleUpdateError', { data: data, message: errorHandler.getErrorMessage(err) });
       } else if (!article) {
-        console.log('no article found');
         // Emit an error response event
         io.emit('articleUpdateError', { data: data, message: 'No article with that identifier has been found' });
       } else {
-        console.log('article found');
         article.title = data.title;
         article.content = data.content;
         
@@ -54,7 +49,7 @@ module.exports = function (io, socket) {
             io.emit('articleUpdateError', { data: data, message: errorHandler.getErrorMessage(err) });
           } else {
             // Emit a success response event
-            io.emit('articleUpdateSuccess', { data: article, message: 'Updated by ' + user.displayName + ' at ' + new Date(Date.now()).toLocaleString() });
+            io.emit('articleUpdateSuccess', { data: article, updatedBy: user.displayName, updatedAt: new Date(Date.now()).toLocaleString(), message: 'Updated' });
           }
         });
       }
