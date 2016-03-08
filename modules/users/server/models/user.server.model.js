@@ -8,7 +8,8 @@ var mongoose = require('mongoose'),
   crypto = require('crypto'),
   validator = require('validator'),
   generatePassword = require('generate-password'),
-  owasp = require('owasp-password-strength-test');
+  owasp = require('owasp-password-strength-test'),
+  uniqueValidator = require('mongoose-beautiful-unique-validation');
 
 /**
  * A Validation function for local strategy properties
@@ -46,7 +47,7 @@ var UserSchema = new Schema({
   },
   email: {
     type: String,
-    unique: true,
+    unique: 'Hey do not use the same email address, man!',
     lowercase: true,
     trim: true,
     default: '',
@@ -54,8 +55,8 @@ var UserSchema = new Schema({
   },
   username: {
     type: String,
-    unique: 'Username already exists',
-    required: 'Please fill in a username',
+    unique: 'Username already existszzz',
+    required: 'Please fill in a username33323',
     lowercase: true,
     trim: true
   },
@@ -104,6 +105,7 @@ var UserSchema = new Schema({
  * Hook a pre save method to hash the password
  */
 UserSchema.pre('save', function (next) {
+  console.log('pre save partying');
   if (this.password && this.isModified('password')) {
     this.salt = crypto.randomBytes(16).toString('base64');
     this.password = this.hashPassword(this.password);
@@ -116,6 +118,7 @@ UserSchema.pre('save', function (next) {
  * Hook a pre validate method to test the local password
  */
 UserSchema.pre('validate', function (next) {
+  console.log('pre validation partying');
   if (this.provider === 'local' && this.password && this.isModified('password')) {
     var result = owasp.test(this.password);
     if (result.errors.length) {
@@ -202,5 +205,7 @@ UserSchema.statics.generateRandomPassphrase = function () {
     }
   });
 };
+// Add plugin for unique validation
+UserSchema.plugin(uniqueValidator);
 
 mongoose.model('User', UserSchema);
