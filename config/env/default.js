@@ -46,5 +46,11 @@ module.exports = {
         fileSize: 1 * 1024 * 1024 // Max file size in bytes (1 MB)
       }
     }
+  },
+  jwt: {
+    secret: process.env.JWT_SECRET || 'M3@N_R0CK5',
+    options: {
+      expiresIn: process.env.JWT_EXPIRES_IN || '1d'
+    }
   }
 };

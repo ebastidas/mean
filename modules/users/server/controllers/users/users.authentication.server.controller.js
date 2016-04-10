@@ -7,7 +7,8 @@ var path = require('path'),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
   mongoose = require('mongoose'),
   passport = require('passport'),
-  User = mongoose.model('User');
+  User = mongoose.model('User'),
+  authorization = require(path.resolve('./config/lib/authorization'));
 
 // URLs for which user can't be redirected on signin
 var noReturnUrls = [
@@ -38,13 +39,8 @@ exports.signup = function (req, res) {
       user.password = undefined;
       user.salt = undefined;
 
-      req.login(user, function (err) {
-        if (err) {
-          res.status(400).send(err);
-        } else {
-          res.json(user);
-        }
-      });
+      var token = authorization.signToken(user);
+      res.json({ user: user, token: token });
     }
   });
 };
@@ -53,21 +49,16 @@ exports.signup = function (req, res) {
  * Signin after passport authentication
  */
 exports.signin = function (req, res, next) {
-  passport.authenticate('local', function (err, user, info) {
+  passport.authenticate('local', function (err, user) {
     if (err || !user) {
-      res.status(400).send(info);
+      res.status(400).send(err);
     } else {
       // Remove sensitive data before login
       user.password = undefined;
       user.salt = undefined;
 
-      req.login(user, function (err) {
-        if (err) {
-          res.status(400).send(err);
-        } else {
-          res.json(user);
-        }
-      });
+      var token = authorization.signToken(user);
+      res.json({ user: user, token: token });
     }
   })(req, res, next);
 };
@@ -111,12 +102,9 @@ exports.oauthCallback = function (strategy) {
       if (!user) {
         return res.redirect('/authentication/signin');
       }
-      req.login(user, function (err) {
-        if (err) {
-          return res.redirect('/authentication/signin');
-        }
 
-        return res.redirect(info || sessionRedirectURL || '/');
+      var token = authorization.signToken(user);
+      return res.redirect(info || sessionRedirectURL || '/');
       });
     })(req, res, next);
   };
@@ -229,13 +217,7 @@ exports.removeOAuthProvider = function (req, res, next) {
         message: errorHandler.getErrorMessage(err)
       });
     } else {
-      req.login(user, function (err) {
-        if (err) {
-          return res.status(400).send(err);
-        } else {
-          return res.json(user);
-        }
-      });
+      return res.json(user);
     }
   });
 };

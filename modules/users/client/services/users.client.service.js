@@ -12,6 +12,10 @@
     return $resource('api/users', {}, {
       update: {
         method: 'PUT'
+      },
+      me: {
+        method: 'GET',
+        url: 'api/users/me'
       }
     });
   }
