@@ -72,13 +72,13 @@ describe('User CRUD tests', function () {
           return done(signupErr);
         }
 
-        signupRes.body.username.should.equal(_user.username);
-        signupRes.body.email.should.equal(_user.email);
+        signupRes.body.user.username.should.equal(_user.username);
+        signupRes.body.user.email.should.equal(_user.email);
         // Assert a proper profile image has been set, even if by default
-        signupRes.body.profileImageURL.should.not.be.empty();
+        signupRes.body.user.profileImageURL.should.not.be.empty();
         // Assert we have just the default 'user' role
-        signupRes.body.roles.should.be.instanceof(Array).and.have.lengthOf(1);
-        signupRes.body.roles.indexOf('user').should.equal(0);
+        signupRes.body.user.roles.should.be.instanceof(Array).and.have.lengthOf(1);
+        signupRes.body.user.roles.indexOf('user').should.equal(0);
         return done();
       });
   });
@@ -95,6 +95,7 @@ describe('User CRUD tests', function () {
 
         // Logout
         agent.get('/api/auth/signout')
+          .set('Authorization', 'JWT ' + signinRes.body.token)
           .expect(302)
           .end(function (signoutErr, signoutRes) {
             if (signoutErr) {
@@ -128,6 +129,7 @@ describe('User CRUD tests', function () {
 
         // Request list of users
         agent.get('/api/users')
+          .set('Authorization', 'JWT ' + signinRes.body.token)
           .expect(403)
           .end(function (usersGetErr, usersGetRes) {
             if (usersGetErr) {
@@ -155,6 +157,7 @@ describe('User CRUD tests', function () {
 
           // Request list of users
           agent.get('/api/users')
+            .set('Authorization', 'JWT ' + signinRes.body.token)
             .expect(200)
             .end(function (usersGetErr, usersGetRes) {
               if (usersGetErr) {
@@ -186,6 +189,7 @@ describe('User CRUD tests', function () {
 
           // Get single user information from the database
           agent.get('/api/users/' + user._id)
+            .set('Authorization', 'JWT ' + signinRes.body.token)
             .expect(200)
             .end(function (userInfoErr, userInfoRes) {
               if (userInfoErr) {
@@ -225,6 +229,7 @@ describe('User CRUD tests', function () {
           };
 
           agent.put('/api/users/' + user._id)
+            .set('Authorization', 'JWT ' + signinRes.body.token)
             .send(userUpdate)
             .expect(200)
             .end(function (userInfoErr, userInfoRes) {
@@ -260,6 +265,7 @@ describe('User CRUD tests', function () {
           }
 
           agent.delete('/api/users/' + user._id)
+            .set('Authorization', 'JWT ' + signinRes.body.token)
             .expect(200)
             .end(function (userInfoErr, userInfoRes) {
               if (userInfoErr) {
@@ -454,6 +460,7 @@ describe('User CRUD tests', function () {
 
         // Change password
         agent.post('/api/users/password')
+          .set('Authorization', 'JWT ' + signinRes.body.token)
           .send({
             newPassword: '1234567890Aa$',
             verifyPassword: '1234567890Aa$',
@@ -483,6 +490,7 @@ describe('User CRUD tests', function () {
 
         // Change password
         agent.post('/api/users/password')
+          .set('Authorization', 'JWT ' + signinRes.body.token)
           .send({
             newPassword: '1234567890Aa$',
             verifyPassword: '1234567890-ABC-123-Aa$',
@@ -512,6 +520,7 @@ describe('User CRUD tests', function () {
 
         // Change password
         agent.post('/api/users/password')
+          .set('Authorization', 'JWT ' + signinRes.body.token)
           .send({
             newPassword: '1234567890Aa$',
             verifyPassword: '1234567890Aa$',
@@ -541,6 +550,7 @@ describe('User CRUD tests', function () {
 
         // Change password
         agent.post('/api/users/password')
+          .set('Authorization', 'JWT ' + signinRes.body.token)
           .send({
             newPassword: '',
             verifyPassword: '',
@@ -558,7 +568,7 @@ describe('User CRUD tests', function () {
       });
   });
 
-  it('should not be able to change user own password if no new password is at all given', function (done) {
+  it('should not be able to change user own password if not signed in', function (done) {
 
     // Change password
     agent.post('/api/users/password')
@@ -590,6 +600,7 @@ describe('User CRUD tests', function () {
 
         // Get own user details
         agent.get('/api/users/me')
+          .set('Authorization', 'JWT ' + signinRes.body.token)
           .expect(200)
           .end(function (err, res) {
             if (err) {
@@ -640,6 +651,7 @@ describe('User CRUD tests', function () {
           };
 
           agent.put('/api/users')
+            .set('Authorization', 'JWT ' + signinRes.body.token)
             .send(userUpdate)
             .expect(200)
             .end(function (userInfoErr, userInfoRes) {
@@ -682,6 +694,7 @@ describe('User CRUD tests', function () {
           };
 
           agent.put('/api/users')
+            .set('Authorization', 'JWT ' + signinRes.body.token)
             .send(userUpdate)
             .expect(200)
             .end(function (userInfoErr, userInfoRes) {
@@ -739,6 +752,7 @@ describe('User CRUD tests', function () {
           };
 
           agent.put('/api/users')
+            .set('Authorization', 'JWT ' + signinRes.body.token)
             .send(userUpdate)
             .expect(400)
             .end(function (userInfoErr, userInfoRes) {
@@ -791,6 +805,7 @@ describe('User CRUD tests', function () {
           };
 
           agent.put('/api/users')
+            .set('Authorization', 'JWT ' + signinRes.body.token)
             .send(userUpdate)
             .expect(400)
             .end(function (userInfoErr, userInfoRes) {
@@ -911,6 +926,7 @@ describe('User CRUD tests', function () {
         }
 
         agent.post('/api/users/picture')
+          .set('Authorization', 'JWT ' + signinRes.body.token)
           .attach('newProfilePicture', './modules/users/client/img/profile/default.png')
           .send(credentials)
           .expect(200)
@@ -940,6 +956,7 @@ describe('User CRUD tests', function () {
         }
 
         agent.post('/api/users/picture')
+          .set('Authorization', 'JWT ' + signinRes.body.token)
           .attach('fieldThatDoesntWork', './modules/users/client/img/profile/default.png')
           .send(credentials)
           .expect(400)
