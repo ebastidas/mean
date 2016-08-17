@@ -52,10 +52,16 @@
         roles: ['user']
       };
 
+      $httpBackend.whenGET('api/users/me').respond(Authentication.user);
+
       // Initialize the Articles controller.
       EditProfileController = $controller('EditProfileController as vm', {
         $scope: $scope
       });
+    }));
+
+    afterEach(inject(function (Authentication) {
+      Authentication.signout();
     }));
 
     describe('Update User Profile', function () {

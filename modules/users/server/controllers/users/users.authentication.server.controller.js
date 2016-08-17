@@ -105,7 +105,6 @@ exports.oauthCallback = function (strategy) {
 
       var token = authorization.signToken(user);
       return res.redirect(info || sessionRedirectURL || '/');
-      });
     })(req, res, next);
   };
 };

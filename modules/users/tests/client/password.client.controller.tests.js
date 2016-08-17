@@ -42,7 +42,6 @@
         $location.path = jasmine.createSpy().and.returnValue(true);
 
         $httpBackend.whenGET('api/users/me').respond({ user: { username: 'test', roles: ['user'] } });
-        $httpBackend.flush();
 
         // Mock logged in user
         Authentication.user = {
