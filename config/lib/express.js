@@ -20,7 +20,8 @@ var config = require('../config'),
   path = require('path'),
   _ = require('lodash'),
   lusca = require('lusca'),
-  authorization = require('./authorization');
+  authorization = require('./authorization'),
+  cors = require('cors');
 
 /**
  * Initialize local variables
@@ -92,6 +93,26 @@ module.exports.initMiddleware = function (app) {
 
   // Authorize Request
   app.use(authorization.authorize);
+};
+
+
+/**
+ * Initialize application CORS
+ */
+module.exports.initCORS = function (app) {
+  // EB-S
+  var whitelist = ['http://localhost:8100']; // List of IP Orings: http://localhost:8100 (default Ionic App)
+  var corsOptionsDelegate = function(req, callback) {
+    var corsOptions;
+    if (whitelist.indexOf(req.header('Origin')) !== -1) {
+      corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
+    } else {
+      corsOptions = { origin: false }; // disable CORS for this request
+    }
+    callback(null, corsOptions); // callback expects two parameters: error and options
+  };
+  app.use(cors(corsOptionsDelegate)); // CORS ENABLED
+  // EB-E
 };
 
 /**
@@ -231,6 +252,10 @@ module.exports.init = function (db) {
 
   // Initialize Express middleware
   this.initMiddleware(app);
+
+  // Enable CORS
+  this.initCORS(app);
+
 
   // Initialize Express view engine
   this.initViewEngine(app);
