@@ -261,8 +261,11 @@ Open your browser and go to that URL and your should see your MEANJS app running
 IBM Bluemix is a Cloud Foundry based PaaS.  By clicking the button below you can signup for Bluemix and deploy
 a working copy of MEANJS to the cloud without having to do the steps above.
 
-DEPLOY TO BRANCH "A_starter" (https://bluemix.net/deploy?repository=https%3A%2F%2Fgithub.com%2Febastidas%2Fmean-jwt&branch=A_starter):
+DEPLOY TO BRANCH "A_starter":
+
 [![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https%3A%2F%2Fgithub.com%2Febastidas%2Fmean-jwt&branch=A_starter)
+
+Button URL: https://bluemix.net/deploy?repository=https%3A%2F%2Fgithub.com%2Febastidas%2Fmean-jwt&branch=A_starter
 
 
 After the deployment is finished you will be left with a copy of the MEANJS code in your own private Git repo
