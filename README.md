@@ -273,6 +273,27 @@ in Bluemix complete with a pre-configured build and deploy pipeline.  Just clone
 commit them back.  Once your changes are committed, the build and deploy pipeline will run automatically deploying
 your changes to Bluemix.
 
+###  Deploying MEANJS To IBM Bluemix (Using Toolchains)
+
+* Add Build Stage and use build type "Grunt"
+   * Add the script found in the file .bluemix/pipeline.yml, as the script of the Build stage:
+
+   `#!/bin/bash
+   # Set Node version to 0.12
+   export PATH=/opt/IBM/node-v0.12/bin:$PATH
+   # Install RVM, Ruby, and SASS
+   # Needed when running grunt build
+   gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+   curl -sSL https://get.rvm.io | bash -s stable --ruby --gems=sass
+   # Start RVM
+   source /home/pipeline/.rvm/scripts/rvm
+   # Build MEANJS
+   npm install
+   grunt build`
+
+   * Check "Run stage after a new commit to git repo"
+* Add the Deployment Stage (with the default settings: "`cf push`")
+
 
 ## Credits
 Inspired by the great work of [Madhusudhan Srinivasa](https://github.com/madhums/)
