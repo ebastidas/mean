@@ -1,0 +1,3 @@
+- Add a "version" global parameter to the API, ej. "/api/v1/users", to distinguish from future versions "/api/v2/users" that might change the endpoints functionality
+
+- Create super-admin-user which cannot be edited/seen by other admin users.

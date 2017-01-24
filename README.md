@@ -1,3 +1,44 @@
+# A Starter MEAN.JS with JTW authentication
+
+This repo is based on a fork of MEAN.JS: https://github.com/mleanos/mean/tree/feature/JWT-Auth-Lib, which uses JWT tokens instead of session authentication (used in the original MEAN.JS implementation). We need JWT to easily allow external calls to our API (CORS is also enable by default in this repo).
+
+For the original specifications of MEAN.JS (http://meanjs.org/), See below the for the original README file, or go to https://github.com/meanjs/mean.
+
+# How to create new modules:
+
+## Replace all words inside files in the folder "modules" (distinguish between lower case and upper case)
+1. Find (match case) and replace all the words "Articles" to "NEW_MODULE_NAME_IN_PLURAL, ej: Agencies"
+2. Find (match case) and replace all the words "articles" to "NEW_MODULE_NAME_IN_PLURAL, ej: agencies"
+3. Find (match case) and replace all the words "Article" to "NEW_MODULE_NAME_IN_SINGULAR, ej. Agency"
+4. Find (match case) and replace all the words "article" to "NEW_MODULE_NAME_IN_SINGULAR, ej. agency"
+
+## Rename all files (all files are lower case)
+Check the files that are going to be renamed with the "-n" flag (Mac or Linux), ej:
+
+    `$ find . -iname "*articles*" -exec rename -n 's/articles/agencies/' {} ";"`
+
+1. Rename folder "modules/articles" to NEW_MODULE_NAME_IN_PLURAL, ej: "modules/agencies"
+
+2. Go to the renamed folder
+
+      `cd modules/agencies`
+
+3. Rename all files with the word "articles" to "NEW_MODULE_NAME_IN_PLURAL, ej: agencies". Use the following command (Mac or Linux):
+
+      `$ find . -iname "*articles*" -exec rename 's/articles/agencies/' {} ";"`
+
+4. Rename all files with the word "article" to "NEW_MODULE_NAME_IN_SINGULAR, ej: agency". Use the following command (Mac or Linux):
+      `$ find . -iname "*article*" -exec rename 's/article/agency/' {} ";"`
+
+------
+------
+------
+------
+------
+------
+------
+------
+
 [![MEAN.JS Logo](http://meanjs.org/img/logo-small.png)](http://meanjs.org/)
 
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/meanjs/mean?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -258,7 +299,7 @@ After `cf push` completes you will see the URL to your running MEANJS applicatio
 Open your browser and go to that URL and your should see your MEANJS app running!
 
 ###  Deploying MEANJS To IBM Bluemix
-IBM Bluemix is a Cloud Foundry based PaaS.  By clicking the button below you can signup for Bluemix and deploy
+IBM Bluemix is a Cloud Foundry based PaaS. By clicking the button below you can signup for Bluemix and deploy
 a working copy of MEANJS to the cloud without having to do the steps above.
 
 DEPLOY TO BRANCH "A_starter":
@@ -276,9 +317,11 @@ your changes to Bluemix.
 ###  Deploying MEANJS To IBM Bluemix (Using Toolchains)
 
 * Add Build Stage and use build type "Grunt"
+
    * Add the script found in the file .bluemix/pipeline.yml, as the script of the Build stage:
 
-   `#!/bin/bash
+   ```bash
+   #!/bin/bash
    # Set Node version to 0.12
    export PATH=/opt/IBM/node-v0.12/bin:$PATH
    # Install RVM, Ruby, and SASS
@@ -289,10 +332,22 @@ your changes to Bluemix.
    source /home/pipeline/.rvm/scripts/rvm
    # Build MEANJS
    npm install
-   grunt build`
+   grunt build
+   ```
 
    * Check "Run stage after a new commit to git repo"
+
 * Add the Deployment Stage (with the default settings: "`cf push`")
+
+* Only when deploying the code in Bluemix, change the line of the file `package.json`:
+
+    `"start": "gulp",`
+
+    to:
+
+    `"start": "node server.js",`
+
+    * Note: Bluemix doesn't support gulp -because it tries to open a second port to listen for changes in the code-, but locally we can use it.
 
 
 ## Credits
