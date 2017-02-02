@@ -6,33 +6,42 @@ For the original specifications of MEAN.JS (http://meanjs.org/), See below the f
 
 # How to create new modules:
 
+How to create a new "agencies" module
+
 ## Duplicate the folder modules/articles to a new one named modules/NEW_MODULE_NAME_IN_PLURAL
 
   `cp -r modules/articles modules/agencies`
 
-
-## Replace all words inside files in the folder "modules" (distinguish between lower case and upper case)
-1. Find (match case) and replace all the words "Articles" to "NEW_MODULE_NAME_IN_PLURAL, ej: Agencies"
-2. Find (match case) and replace all the words "articles" to "NEW_MODULE_NAME_IN_PLURAL, ej: agencies"
-3. Find (match case) and replace all the words "Article" to "NEW_MODULE_NAME_IN_SINGULAR, ej. Agency"
-4. Find (match case) and replace all the words "article" to "NEW_MODULE_NAME_IN_SINGULAR, ej. agency"
+## Replace all words inside files in the folder "modules/NEW_MODULE_NAME_IN_PLURAL", ej. "modules/agencies" (Note: distinguish between lower case and upper case)
+1. Find (match case) and replace all the words "OLD_MODULE_NAME_IN_PLURAL" (ej: Articles) to "NEW_MODULE_NAME_IN_PLURAL" (ej: Agencies) (Check if found 120 matches in 21 files)
+2. Find (match case) and replace all the words "OLD_MODULE_NAME_IN_PLURAL" (ej: articles) to "NEW_MODULE_NAME_IN_PLURAL" (ej: agencies) (Check if found 156 matches in 23 files)
+3. Find (match case) and replace all the words "OLD_MODULE_NAME_IN_SINGULAR" (ej: Article) to "NEW_MODULE_NAME_IN_SINGULAR" (ej: Agency) (Check if found 111 matches in 16 files)
+4. Find (match case) and replace all the words "OLD_MODULE_NAME_IN_SINGULAR" (ej: article) to "NEW_MODULE_NAME_IN_SINGULAR" (ej: agency) (Check if found 356 matches in 22 files)
 
 ## Rename all files (all files are lower case)
-Check the files that are going to be renamed with the "-n" flag (Mac or Linux), ej:
 
-    `$ find . -iname "*articles*" -exec rename -n 's/articles/agencies/' {} ";"`
-
-1. Rename folder "modules/articles" to NEW_MODULE_NAME_IN_PLURAL, ej: "modules/agencies"
-
-2. Go to the renamed folder
+1. Go to the new renamed folder
 
       `cd modules/agencies`
 
-3. Rename all files with the word "articles" to "NEW_MODULE_NAME_IN_PLURAL, ej: agencies". Use the following command (Mac or Linux):
+      Check the files that are going to be renamed with the "-n" flag (Mac or Linux), ej:
+
+      `$ find . -iname "*articles*" -exec rename -n 's/articles/agencies/' {} ";"`
+
+2. Rename all files with the word "articles" to "NEW_MODULE_NAME_IN_PLURAL, ej: agencies". Use the following command (Mac or Linux):
+
+      `$ find . -iname "*OLD_MODULE_NAME_IN_PLURAL*" -exec rename 's/NEW_MODULE_NAME_IN_PLURAL/OLD_MODULE_NAME_IN_PLURAL/' {} ";"`
+
+    ej.
 
       `$ find . -iname "*articles*" -exec rename 's/articles/agencies/' {} ";"`
 
-4. Rename all files with the word "article" to "NEW_MODULE_NAME_IN_SINGULAR, ej: agency". Use the following command (Mac or Linux):
+3. Rename all files with the word "article" to "NEW_MODULE_NAME_IN_SINGULAR, ej: agency". Use the following command (Mac or Linux):
+
+      `$ find . -iname "*OLD_MODULE_NAME_IN_SINGULAR*" -exec rename 's/NEW_MODULE_NAME_IN_SINGULAR/OLD_MODULE_NAME_IN_SINGULAR/' {} ";"`
+
+    ej.
+
       `$ find . -iname "*article*" -exec rename 's/article/agency/' {} ";"`
 
 ------
