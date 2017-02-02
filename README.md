@@ -6,6 +6,11 @@ For the original specifications of MEAN.JS (http://meanjs.org/), See below the f
 
 # How to create new modules:
 
+## Duplicate the folder modules/articles to a new one named modules/NEW_MODULE_NAME_IN_PLURAL
+
+  `cp -r modules/articles modules/agencies`
+
+
 ## Replace all words inside files in the folder "modules" (distinguish between lower case and upper case)
 1. Find (match case) and replace all the words "Articles" to "NEW_MODULE_NAME_IN_PLURAL, ej: Agencies"
 2. Find (match case) and replace all the words "articles" to "NEW_MODULE_NAME_IN_PLURAL, ej: agencies"
