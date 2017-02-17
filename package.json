@@ -17,7 +17,7 @@
   "scripts": {
     "update": "npm update && npm prune && bower install --allow-root && bower prune --allow-root",
     "start": "gulp",
-    "start_comment": "On production (ej. Bluemix), use the 'start' script 'node server.js' to avoid unsuccessful deployment due to gulp trying to listen to other port.",
+    "start:bluemix": "node server.js",
     "start:prod": "gulp prod",
     "start:debug": "gulp debug",
     "gulp": "gulp",

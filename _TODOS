@@ -1,3 +1,10 @@
-- Add a "version" global parameter to the API, ej. "/api/v1/users", to distinguish from future versions "/api/v2/users" that might change the endpoints functionality
+- Add a "version" global parameter to the API, ej. "api/v1/users", to distinguish from future versions "api/v2/users" that might change the endpoints functionality
+    - change "api/" to "api/v1/"
+
+- Add a "api/latest" and link to the current version number too.
 
 - Create super-admin-user which cannot be edited/seen by other admin users.
+
+- If accessing the api directly, the endpoint auth/signup doesn't validate a password nor require one either. Change this, so password is required and valid when signup only (check if it doesn't break when signin or SEED initial users). Check this file: modules/users/server/models/user.server.model.js
+
+- In "cloud-foundry" environment, seed new admin user only when it doesn't exist one already.

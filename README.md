@@ -4,15 +4,58 @@ This repo is based on a fork of MEAN.JS: https://github.com/mleanos/mean/tree/fe
 
 For the original specifications of MEAN.JS (http://meanjs.org/), See below the for the original README file, or go to https://github.com/meanjs/mean.
 
+## How to run locally
+
+* Clone the repo
+
+    ```bash
+    $ git clone https://github.com/ebastidas/mean-jwt.git mean-jwt
+    ```
+
+* Install node modules
+
+    ```bash
+    $ cd mean-jwt
+    $ npm install
+    ```
+
+* Change/check the line of the file `package.json`:
+
+    * When running locally (development):
+        `"start": "gulp",`
+
+    or:
+
+    * When deploying in Bluemix (Note: Bluemix doesn't support gulp -because it tries to open a second port to listen for changes in the code-, but locally we can use it):
+
+        `"start": "node server.js",`
+
+* Run your application using npm:
+
+    ```bash
+    $ npm start
+    ```
+    or
+
+    ```bash
+    $ gulp
+    ```
+
+Your application should run on port 3000 with the *development* environment configuration, so in your browser just go to [http://localhost:3000](http://localhost:3000)
+
+
 # How to create new modules:
 
 How to create a new "agencies" module
 
-## Duplicate the folder modules/articles to a new one named modules/NEW_MODULE_NAME_IN_PLURAL
+## Duplicate a new module folder
+
+Duplicate the folder modules/articles to a new one named modules/NEW_MODULE_NAME_IN_PLURAL
 
   `cp -r modules/articles modules/agencies`
 
-## Replace all words inside files in the folder "modules/NEW_MODULE_NAME_IN_PLURAL", ej. "modules/agencies" (Note: distinguish between lower case and upper case)
+## Replace all old_module words inside files
+Replace all words inside files in the folder "modules/NEW_MODULE_NAME_IN_PLURAL", ej. "modules/agencies" (Note: distinguish between lower case and upper case):
 1. Find (match case) and replace all the words "OLD_MODULE_NAME_IN_PLURAL" (ej: Articles) to "NEW_MODULE_NAME_IN_PLURAL" (ej: Agencies) (Check if found 120 matches in 21 files)
 2. Find (match case) and replace all the words "OLD_MODULE_NAME_IN_PLURAL" (ej: articles) to "NEW_MODULE_NAME_IN_PLURAL" (ej: agencies) (Check if found 156 matches in 23 files)
 3. Find (match case) and replace all the words "OLD_MODULE_NAME_IN_SINGULAR" (ej: Article) to "NEW_MODULE_NAME_IN_SINGULAR" (ej: Agency) (Check if found 111 matches in 16 files)
@@ -43,6 +86,123 @@ How to create a new "agencies" module
     ej.
 
       `$ find . -iname "*article*" -exec rename 's/article/agency/' {} ";"`
+
+
+# Deploying To Cloud Foundry
+
+There are 2 options:
+
+* With the Cloudfoundry (cf) command line interface (CLI). Check https://github.com/IBM-Bluemix/docs/blob/master/starters/install_cli.md
+* Using IBM Bluemix Toolchains / Delivery Pipelines.
+
+## Deploying To Cloud Foundry (with the command line interface)
+
+Cloud Foundry is an open source platform-as-a-service (PaaS).  The MEANJS project
+can easily be deployed to any Cloud Foundry instance.  The easiest way to deploy the
+MEANJS project to Cloud Foundry is to use a public hosted instance.  The two most popular
+instances are [Pivotal Web Services](https://run.pivotal.io/) and
+[IBM Bluemix](https://bluemix.net).  Both provide free trials and support pay-as-you-go models
+for hosting applications in the cloud.  After you have an account follow the below steps to deploy MEANJS.
+
+* Install the [Cloud Foundry command line tools](http://docs.cloudfoundry.org/devguide/installcf/install-go-cli.html).
+* Now you need to log into Cloud Foundry from the Cloud Foundry command line.
+   *  If you are using IBM Bluemix run `$ cf login -a api.ng.bluemix.net`.
+   *  If you are using Pivotal Web Services run `$ cf login -a api.run.pivotal.io`.
+* Create a Mongo DB service (only the first time deployment)
+   *  If DB name change from `mean-mongo` to `ANOTHER_DB_NAME`, change this new name into the files:    
+        `manifest.yml`,
+        `config/env/cloud-foundry.js`.
+   *  If you are using IBM Bluemix run `$ cf create-service mongodb 100 mean-mongo`
+   *  If you are using Pivotal Web Services run `$ cf create-service mlab sandbox mean-mongo`
+* Clone the GitHub repo for MEANJS if you have not already done so   
+   * `$ git clone -b A_starter https://github.com/ebastidas/mean-jwt.git && cd mean-jwt`
+* Run `$ npm install`
+* Run the Grunt Build task to build the optimized JavaScript and CSS files
+   * `$ grunt build`
+* Deploy MEANJS to Cloud Foundry
+   * `$ cf push APP_NAME`
+
+After `cf push` completes you will see the URL to your running MEANJS application
+(your URL will be different).
+
+     requested state: started
+     instances: 1/1
+     usage: 128M x 1 instances
+     urls: mean-humbler-frappa.mybluemix.net
+
+Open your browser and go to that URL and your should see your MEANJS app running!
+
+##  Deploying To Cloud Foundry (Using IBM Bluemix Toolchains)
+
+* Connect a new MongoDB service (only the first time deployment):
+  *  If DB name change from `mean-mongo` to `ANOTHER_DB_NAME`, change this new name into the files:    
+      `manifest.yml`,
+      `config/env/cloud-foundry.js`.
+* In the Toolchain/Pipeline, add Build Stage:
+   * Use build type "Grunt",
+   * Connect a git(hub) repo and a branch,
+   * Add the script found in the file .bluemix/pipeline.yml, as the script of the Build stage:
+
+       ```bash
+       #!/bin/bash
+       # Set Node version to 0.12
+       export PATH=/opt/IBM/node-v0.12/bin:$PATH
+       # Install RVM, Ruby, and SASS
+       # Needed when running grunt build
+       gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+       curl -sSL https://get.rvm.io | bash -s stable --ruby --gems=sass
+       # Start RVM
+       source /home/pipeline/.rvm/scripts/rvm
+       # Build MEANJS
+       npm install
+       grunt build
+       ```
+
+   * Check "Run stage after a new commit to git repo"
+
+* In the Toolchain/Pipeline, add the Deployment Stage (with the default settings: "`cf push`")
+
+* Only when deploying the code in Bluemix, change the line of the file `package.json`:
+
+    `"start": "gulp",`
+
+    to:
+
+    `"start": "node server.js",`
+
+    * Note: Bluemix doesn't support gulp -because it tries to open a second port to listen for changes in the code-, but locally we can use it.
+
+
+## Seed initial admin user
+
+The first time to upload/deploy, we need to seed the first users (admin, and user). 2 options for this:
+
+* Change the pacakge.json file and run the start command like this:
+    `"start": "MONGO_SEED=true node server.js"`
+* Redeploy app.
+* Change back to the original pacakge.json file and run the start command like this:
+    `"start": "node server.js"`
+* Redeploy app (skip this step if deployed using CLI).
+
+
+##  (Automatic) Deployment MEANJS To IBM Bluemix
+IBM Bluemix is a Cloud Foundry based PaaS.  By clicking the button below you can signup for Bluemix and deploy
+a working copy of MEANJS to the cloud without having to do the steps above.
+
+DEPLOY TO BRANCH "A_starter":
+
+[![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https%3A%2F%2Fgithub.com%2Febastidas%2Fmean-jwt&branch=A_starter)
+
+Button URL: https://bluemix.net/deploy?repository=https%3A%2F%2Fgithub.com%2Febastidas%2Fmean-jwt&branch=A_starter
+
+
+After the deployment is finished you will be left with a copy of the MEANJS code in your own private Git repo
+in Bluemix complete with a pre-configured build and deploy pipeline.  Just clone the Git repo, make your changes, and
+commit them back.  Once your changes are committed, the build and deploy pipeline will run automatically deploying
+your changes to Bluemix.
+
+
+
 
 ------
 ------
@@ -277,92 +437,6 @@ In the docs we'll try to explain both general concepts of MEAN components and gi
 
 ## Contributing
 We welcome pull requests from the community! Just be sure to read the [contributing](https://github.com/meanjs/mean/blob/master/CONTRIBUTING.md) doc to get started.
-
-## Deploying To Cloud Foundry
-
-Cloud Foundry is an open source platform-as-a-service (PaaS).  The MEANJS project
-can easily be deployed to any Cloud Foundry instance.  The easiest way to deploy the
-MEANJS project to Cloud Foundry is to use a public hosted instance.  The two most popular
-instances are [Pivotal Web Services](https://run.pivotal.io/) and
-[IBM Bluemix](https://bluemix.net).  Both provide free trials and support pay-as-you-go models
-for hosting applications in the cloud.  After you have an account follow the below steps to deploy MEANJS.
-
-* Install the [Cloud Foundry command line tools](http://docs.cloudfoundry.org/devguide/installcf/install-go-cli.html).
-* Now you need to log into Cloud Foundry from the Cloud Foundry command line.
-   *  If you are using Pivotal Web Services run `$ cf login -a api.run.pivotal.io`.
-   *  If you are using IBM Bluemix run `$ cf login -a api.ng.bluemix.net`.
-* Create a Mongo DB service (if DB name change from `mean-mongo` to `ANOTHER_DB_NAME`, change this new name into the files: `manifest.yml`, and `config/env/cloud-foundry.js` ).
-   *  If you are using Pivotal Web Services run `$ cf create-service mlab sandbox mean-mongo`
-   *  If you are using IBM Bluemix run `$ cf create-service mongodb 100 mean-mongo`
-* Clone the GitHub repo for MEANJS if you have not already done so
-   * `$ git clone -b A_starter https://github.com/ebastidas/mean-jwt.git && cd mean-jwt`
-* Run `$ npm install`
-* Run the Grunt Build task to build the optimized JavaScript and CSS files
-   * `$ grunt build`
-* Deploy MEANJS to Cloud Foundry
-   * `$ cf push`
-
-After `cf push` completes you will see the URL to your running MEANJS application
-(your URL will be different).
-
-     requested state: started
-     instances: 1/1
-     usage: 128M x 1 instances
-     urls: mean-humbler-frappa.mybluemix.net
-
-Open your browser and go to that URL and your should see your MEANJS app running!
-
-###  Deploying MEANJS To IBM Bluemix
-IBM Bluemix is a Cloud Foundry based PaaS. By clicking the button below you can signup for Bluemix and deploy
-a working copy of MEANJS to the cloud without having to do the steps above.
-
-DEPLOY TO BRANCH "A_starter":
-
-[![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https%3A%2F%2Fgithub.com%2Febastidas%2Fmean-jwt&branch=A_starter)
-
-Button URL: https://bluemix.net/deploy?repository=https%3A%2F%2Fgithub.com%2Febastidas%2Fmean-jwt&branch=A_starter
-
-
-After the deployment is finished you will be left with a copy of the MEANJS code in your own private Git repo
-in Bluemix complete with a pre-configured build and deploy pipeline.  Just clone the Git repo, make your changes, and
-commit them back.  Once your changes are committed, the build and deploy pipeline will run automatically deploying
-your changes to Bluemix.
-
-###  Deploying MEANJS To IBM Bluemix (Using Toolchains)
-
-* Add Build Stage and use build type "Grunt"
-
-   * Add the script found in the file .bluemix/pipeline.yml, as the script of the Build stage:
-
-   ```bash
-   #!/bin/bash
-   # Set Node version to 0.12
-   export PATH=/opt/IBM/node-v0.12/bin:$PATH
-   # Install RVM, Ruby, and SASS
-   # Needed when running grunt build
-   gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
-   curl -sSL https://get.rvm.io | bash -s stable --ruby --gems=sass
-   # Start RVM
-   source /home/pipeline/.rvm/scripts/rvm
-   # Build MEANJS
-   npm install
-   grunt build
-   ```
-
-   * Check "Run stage after a new commit to git repo"
-
-* Add the Deployment Stage (with the default settings: "`cf push`")
-
-* Only when deploying the code in Bluemix, change the line of the file `package.json`:
-
-    `"start": "gulp",`
-
-    to:
-
-    `"start": "node server.js",`
-
-    * Note: Bluemix doesn't support gulp -because it tries to open a second port to listen for changes in the code-, but locally we can use it.
-
 
 ## Credits
 Inspired by the great work of [Madhusudhan Srinivasa](https://github.com/madhums/)
