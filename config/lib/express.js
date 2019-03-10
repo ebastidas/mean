@@ -102,15 +102,15 @@ module.exports.initMiddleware = function (app) {
  */
 module.exports.initCORS = function (app) {
 
-  ////////////////////////////////////////
+  // //////////////////////////////////////
   // Enable All CORS Requests - START
   app.use(cors());
   // Enable All CORS Requests - END
-  ////////////////////////////////////////
+  // //////////////////////////////////////
 
 
   /*
-  ////////////////////////////////////////
+  // //////////////////////////////////////
   // Configuring CORS Asynchronously - START
   var whitelist = ['http://192.168.0.213:8100','http://localhost:8100']; // List of IP Orings: http://localhost:8100 (default Ionic App)
   var corsOptionsDelegate = function(req, callback) {
@@ -124,7 +124,7 @@ module.exports.initCORS = function (app) {
   };
   app.use(cors(corsOptionsDelegate)); // CORS ENABLED
   // Configuring CORS Asynchronously - END
-  ////////////////////////////////////////
+  // //////////////////////////////////////
   */
 };
 // EB-E
