@@ -56,10 +56,36 @@ Duplicate the folder modules/articles to a new one named modules/NEW_MODULE_NAME
 
 ## Replace all old_module words inside files
 Replace all words inside files in the folder "modules/NEW_MODULE_NAME_IN_PLURAL", ej. "modules/agencies" (Note: distinguish between lower case and upper case):
+
+On OSX:
+  `grep -rli 'old_word' * | xargs -I@ sed -i '' 's/old_word/new_word/g' @`
+
+On Linux:
+  `grep -rli 'old_word' * | xargs -i@ sed -i 's/old_word/new_word/g' @`
+
 1. Find (match case) and replace all the words "OLD_MODULE_NAME_IN_PLURAL" (ej: Articles) to "NEW_MODULE_NAME_IN_PLURAL" (ej: Agencies) (Check if found 120 matches in 21 files)
+
+On OSX:
+  `grep -rli 'Articles' * | xargs -I@ sed -i '' 's/Articles/Agencies/g' @`
+
+
 2. Find (match case) and replace all the words "OLD_MODULE_NAME_IN_PLURAL" (ej: articles) to "NEW_MODULE_NAME_IN_PLURAL" (ej: agencies) (Check if found 156 matches in 23 files)
+
+On OSX:
+  `grep -rli 'articles' * | xargs -I@ sed -i '' 's/articles/agencies/g' @`
+
+
 3. Find (match case) and replace all the words "OLD_MODULE_NAME_IN_SINGULAR" (ej: Article) to "NEW_MODULE_NAME_IN_SINGULAR" (ej: Agency) (Check if found 111 matches in 16 files)
+
+On OSX:
+  `grep -rli 'Article' * | xargs -I@ sed -i '' 's/Article/Agency/g' @`
+
+
 4. Find (match case) and replace all the words "OLD_MODULE_NAME_IN_SINGULAR" (ej: article) to "NEW_MODULE_NAME_IN_SINGULAR" (ej: agency) (Check if found 356 matches in 22 files)
+
+On OSX:
+  `grep -rli 'article' * | xargs -I@ sed -i '' 's/article/agency/g' @`
+
 
 ## Rename all files (all files are lower case)
 
@@ -71,9 +97,11 @@ Replace all words inside files in the folder "modules/NEW_MODULE_NAME_IN_PLURAL"
 
       `$ find . -iname "*articles*" -exec rename -n 's/articles/agencies/' {} ";"`
 
+      Note: `rename` has to be installed. If not install: `brew install rename`
+
 2. Rename all files with the word "articles" to "NEW_MODULE_NAME_IN_PLURAL, ej: agencies". Use the following command (Mac or Linux):
 
-      `$ find . -iname "*OLD_MODULE_NAME_IN_PLURAL*" -exec rename 's/NEW_MODULE_NAME_IN_PLURAL/OLD_MODULE_NAME_IN_PLURAL/' {} ";"`
+      `$ find . -iname "*OLD_MODULE_NAME_IN_PLURAL*" -exec rename 's/OLD_MODULE_NAME_IN_PLURAL/NEW_MODULE_NAME_IN_PLURAL/' {} ";"`
 
     ej.
 
@@ -81,7 +109,7 @@ Replace all words inside files in the folder "modules/NEW_MODULE_NAME_IN_PLURAL"
 
 3. Rename all files with the word "article" to "NEW_MODULE_NAME_IN_SINGULAR, ej: agency". Use the following command (Mac or Linux):
 
-      `$ find . -iname "*OLD_MODULE_NAME_IN_SINGULAR*" -exec rename 's/NEW_MODULE_NAME_IN_SINGULAR/OLD_MODULE_NAME_IN_SINGULAR/' {} ";"`
+      `$ find . -iname "*OLD_MODULE_NAME_IN_SINGULAR*" -exec rename 's/OLD_MODULE_NAME_IN_PLURAL/NEW_MODULE_NAME_IN_PLURAL/' {} ";"`
 
     ej.
 
